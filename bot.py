@@ -6,17 +6,27 @@ from translator import translate
 TOKEN = os.getenv("TELEGRAM_TOKEN")
 
 async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not update.message:
+        return
 
     text = update.message.text
 
-    result = translate(text)
+    try:
+        result = translate(text)
+        await update.message.reply_text(result)
+    except Exception as e:
+        await update.message.reply_text("Lỗi dịch 😢")
 
-    await update.message.reply_text(result)
+def main():
+    app = ApplicationBuilder().token(TOKEN).build()
 
-app = ApplicationBuilder().token(TOKEN).build()
+    app.add_handler(
+        MessageHandler(filters.TEXT & ~filters.COMMAND, handle)
+    )
 
-app.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), handle))
+    print("AI Translator Bot running 🚀")
 
-print("AI Translator Bot running")
+    app.run_polling()
 
-app.run_polling()
+if __name__ == "__main__":
+    main()
