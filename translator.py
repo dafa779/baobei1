@@ -1,21 +1,28 @@
 from openai import OpenAI
+import os
 from langdetect import detect
-from config import OPENAI_API_KEY
 
-client = OpenAI(api_key=OPENAI_API_KEY)
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-def translate(text,target="vi"):
+def translate(text):
 
     try:
-        source=detect(text)
+        lang = detect(text)
     except:
-        source="auto"
+        lang = "auto"
 
-    prompt=f"Translate from {source} to {target}:\n{text}"
+    if lang == "zh-cn" or lang == "zh":
+        target = "Vietnamese"
+    else:
+        target = "Chinese"
 
-    response=client.chat.completions.create(
+    prompt = f"Translate this text to {target}:\n{text}"
+
+    response = client.chat.completions.create(
         model="gpt-4.1-mini",
-        messages=[{"role":"user","content":prompt}]
+        messages=[
+            {"role": "user", "content": prompt}
+        ]
     )
 
     return response.choices[0].message.content
