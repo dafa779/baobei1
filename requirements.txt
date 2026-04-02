@@ -1,3 +1,2 @@
-python-telegram-bot==20.7
-openai
-langdetect
+Python 3.11
+python-telegram-bot 21.x
