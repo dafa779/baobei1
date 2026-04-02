@@ -1,19 +1,21 @@
+import os
 from telegram import Update
-from telegram.ext import ApplicationBuilder,MessageHandler,filters,ContextTypes
+from telegram.ext import ApplicationBuilder, MessageHandler, ContextTypes, filters
 from translator import translate
-from config import TELEGRAM_TOKEN
 
-async def handle(update:Update,context:ContextTypes.DEFAULT_TYPE):
+TOKEN = os.getenv("TELEGRAM_TOKEN")
 
-    text=update.message.text
+async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
-    result=translate(text)
+    text = update.message.text
+
+    result = translate(text)
 
     await update.message.reply_text(result)
 
-app=ApplicationBuilder().token(TELEGRAM_TOKEN).build()
+app = ApplicationBuilder().token(TOKEN).build()
 
-app.add_handler(MessageHandler(filters.TEXT,handle))
+app.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), handle))
 
 print("AI Translator Bot running")
 
