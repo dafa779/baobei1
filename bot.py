@@ -3,7 +3,7 @@ from telegram import Update
 from telegram.ext import ApplicationBuilder, MessageHandler, filters, ContextTypes
 from translator import translate
 
-TOKEN = os.getenv("TOKEN")
+TOKEN = os.getenv(8708366814:AAEDC1i8gN01IRkbA7C1UcMvwckmlgd_r6E)
 
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
