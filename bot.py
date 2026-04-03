@@ -1,3 +1,4 @@
+import os
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
 from deep_translator import GoogleTranslator
@@ -5,35 +6,25 @@ from deep_translator import GoogleTranslator
 TOKEN = os.getenv("TOKEN")
 
 
-def translate_text(text):
-    try:
-        return GoogleTranslator(source='zh-CN', target='vi').translate(text)
-    except:
-        try:
-            return GoogleTranslator(source='vi', target='zh-CN').translate(text)
-        except:
-            return "Không dịch được"
-
-
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(
-        "🤖 Bot dịch Trung ⇄ Việt\n\n"
-        "Gửi tin nhắn để dịch 🇨🇳🇻🇳"
-    )
+    await update.message.reply_text("🤖 Bot dịch đã hoạt động!\nGửi tin nhắn để dịch sang tiếng Việt.")
 
 
-async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def translate(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text
-    result = translate_text(text)
 
-    await update.message.reply_text(result)
+    try:
+        translated = GoogleTranslator(source='auto', target='vi').translate(text)
+        await update.message.reply_text(translated)
+    except Exception as e:
+        await update.message.reply_text("❌ Lỗi dịch: " + str(e))
 
 
 def main():
     app = ApplicationBuilder().token(TOKEN).build()
 
     app.add_handler(CommandHandler("start", start))
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, translate))
 
     print("Bot đang chạy...")
     app.run_polling()
