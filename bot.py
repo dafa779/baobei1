@@ -2,17 +2,15 @@ from telegram import Update
 from telegram.ext import ApplicationBuilder, MessageHandler, ContextTypes, filters
 from translator import translate
 
-TOKEN = "BOT_TOKEN"
+TOKEN = "YOUR_BOT_TOKEN"
+
 
 async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text
 
     try:
-        # thử dịch sang tiếng Việt
         vi = translate(text, "vi")
-
-        # thử dịch sang tiếng Trung
-        zh = translate(text, "zh-cn")
+        zh = translate(text, "zh-CN")
 
         if text != vi:
             await update.message.reply_text("🇻🇳 " + vi)
@@ -20,8 +18,9 @@ async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if text != zh:
             await update.message.reply_text("🇨🇳 " + zh)
 
-    except:
-        pass
+    except Exception as e:
+        print(e)
+
 
 app = ApplicationBuilder().token(TOKEN).build()
 
