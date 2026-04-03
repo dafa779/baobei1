@@ -18,5 +18,4 @@ def translate(text, target="vi"):
         return result[0][0][0]
     else:
         return "❌ Lỗi dịch"
-export TOKEN=YOUR_BOT_TOKEN
-python bot.py
+export TOKEN=8708366814:AAEDC1i8gN01IRkbA7C1UcMvwckmlgd_r6E
