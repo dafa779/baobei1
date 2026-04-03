@@ -1,123 +1,55 @@
 import os
-from telegram import Update, ReplyKeyboardMarkup
+from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, ContextTypes, filters
 from deep_translator import GoogleTranslator
 
 TOKEN = os.getenv("TOKEN")
 
-keyboard = [
-    ["🇻🇳 Việt → Trung", "🇨🇳 Trung → Việt"]
-]
-
-markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
-
-
+# start
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(
+        "🤖 Bot dịch Trung ↔ Việt\n\n"
+        "Gửi tiếng Trung -> bot dịch sang Việt\n"
+        "Gửi tiếng Việt -> bot dịch sang Trung"
+    )
 
-    text = """
-🤖 BOT DỊCH TRUNG - VIỆT
-
-Gửi tin nhắn để dịch tự động
-
-Lệnh:
-/trung <text>  → Việt sang Trung
-/viet <text>   → Trung sang Việt
-
-Ví dụ:
-/trung Xin chào
-/viet 你好
-"""
-
-    await update.message.reply_text(text, reply_markup=markup)
-
-
-# Việt → Trung
-async def viet_trung(update: Update, context: ContextTypes.DEFAULT_TYPE):
-
-    text = " ".join(context.args)
-
-    if not text:
-        await update.message.reply_text("❌ Ví dụ: /trung Xin chào")
-        return
-
+# detect translate
+def translate_text(text):
     try:
-        result = GoogleTranslator(source="vi", target="zh-CN").translate(text)
-        await update.message.reply_text(f"🇨🇳 {result}")
+        # thử dịch sang việt
+        vi = GoogleTranslator(source='zh-CN', target='vi').translate(text)
+
+        # nếu khác text gốc -> nghĩa là tiếng Trung
+        if vi != text:
+            return f"🇻🇳 {vi}"
+
+        # nếu giống -> dịch sang trung
+        zh = GoogleTranslator(source='vi', target='zh-CN').translate(text)
+        return f"🇨🇳 {zh}"
+
     except:
-        await update.message.reply_text("❌ Lỗi dịch")
+        return "❌ Lỗi dịch"
 
-
-# Trung → Việt
-async def trung_viet(update: Update, context: ContextTypes.DEFAULT_TYPE):
-
-    text = " ".join(context.args)
-
-    if not text:
-        await update.message.reply_text("❌ Ví dụ: /viet 你好")
-        return
-
-    try:
-        result = GoogleTranslator(source="zh-CN", target="vi").translate(text)
-        await update.message.reply_text(f"🇻🇳 {result}")
-    except:
-        await update.message.reply_text("❌ Lỗi dịch")
-
-
-# Auto dịch
-async def auto_translate(update: Update, context: ContextTypes.DEFAULT_TYPE):
-
+# message handler
+async def translate(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text
+    result = translate_text(text)
+    await update.message.reply_text(result)
 
-    try:
-
-        if text == "🇻🇳 Việt → Trung":
-            context.user_data["mode"] = "vi_zh"
-            await update.message.reply_text("✍️ Gửi tiếng Việt để dịch sang Trung")
-            return
-
-        if text == "🇨🇳 Trung → Việt":
-            context.user_data["mode"] = "zh_vi"
-            await update.message.reply_text("✍️ Gửi tiếng Trung để dịch sang Việt")
-            return
-
-        mode = context.user_data.get("mode")
-
-        if mode == "vi_zh":
-            result = GoogleTranslator(source="vi", target="zh-CN").translate(text)
-            await update.message.reply_text(f"🇨🇳 {result}")
-            return
-
-        if mode == "zh_vi":
-            result = GoogleTranslator(source="zh-CN", target="vi").translate(text)
-            await update.message.reply_text(f"🇻🇳 {result}")
-            return
-
-        # auto detect
-        vi = GoogleTranslator(source="auto", target="vi").translate(text)
-
-        if vi.lower() == text.lower():
-            zh = GoogleTranslator(source="auto", target="zh-CN").translate(text)
-            await update.message.reply_text(f"🇨🇳 {zh}")
-        else:
-            await update.message.reply_text(f"🇻🇳 {vi}")
-
-    except:
-        await update.message.reply_text("❌ Không dịch được")
-
-
+# main
 def main():
+
+    if not TOKEN:
+        print("❌ TOKEN chưa được thiết lập")
+        return
 
     app = ApplicationBuilder().token(TOKEN).build()
 
     app.add_handler(CommandHandler("start", start))
-    app.add_handler(CommandHandler("trung", viet_trung))
-    app.add_handler(CommandHandler("viet", trung_viet))
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, auto_translate))
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, translate))
 
-    print("BOT ĐANG CHẠY...")
-
+    print("✅ Bot đang chạy...")
     app.run_polling()
-
 
 if __name__ == "__main__":
     main()
