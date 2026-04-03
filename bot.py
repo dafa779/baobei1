@@ -40,7 +40,7 @@ async def translate(update: Update, context: ContextTypes.DEFAULT_TYPE):
 def main():
 
     if not TOKEN:
-        print("8708366814:AAEDC1i8gN01IRkbA7C1UcMvwckmlgd_r6E")
+        print("YOUR_TOKEN")
         return
 
     app = ApplicationBuilder().token(TOKEN).build()
