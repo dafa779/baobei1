@@ -1,7 +1,16 @@
 from deep_translator import GoogleTranslator
 
-def translate_to_vi(text):
-    return GoogleTranslator(source='auto', target='vi').translate(text)
+def translate(text):
+    try:
+        # phát hiện tiếng
+        if any('\u4e00' <= c <= '\u9fff' for c in text):
+            # Trung → Việt
+            result = GoogleTranslator(source='zh-CN', target='vi').translate(text)
+        else:
+            # Việt → Trung
+            result = GoogleTranslator(source='vi', target='zh-CN').translate(text)
 
-def translate_to_zh(text):
-    return GoogleTranslator(source='auto', target='zh-CN').translate(text)
+        return result
+
+    except Exception as e:
+        return "Lỗi dịch: " + str(e)
