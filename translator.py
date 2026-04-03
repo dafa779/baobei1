@@ -1,5 +1,7 @@
 from deep_translator import GoogleTranslator
 
-def translate(text, target):
-    translated = GoogleTranslator(source='auto', target=target).translate(text)
-    return translated
+def translate_to_vi(text):
+    return GoogleTranslator(source='auto', target='vi').translate(text)
+
+def translate_to_zh(text):
+    return GoogleTranslator(source='auto', target='zh-CN').translate(text)
