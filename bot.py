@@ -1,33 +1,40 @@
+import os
 from telegram import Update
-from telegram.ext import ApplicationBuilder, MessageHandler, ContextTypes, filters
+from telegram.ext import ApplicationBuilder, MessageHandler, filters, ContextTypes
 from translator import translate
 
-TOKEN = "YOUR_BOT_TOKEN"
+TOKEN = os.getenv("TOKEN")
 
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
-
     text = update.message.text
 
-    # phát hiện tiếng
-    if any('\u4e00' <= c <= '\u9fff' for c in text):
-        result = translate(text, "vi")
-    else:
-        result = translate(text, "zh-CN")
+    # dịch Trung -> Việt
+    vi = translate(text, "vi")
 
-    await update.message.reply_text(result)
+    # dịch Việt -> Trung
+    zh = translate(text, "zh-CN")
+
+    reply = f"""
+📥 Gốc:
+{text}
+
+🇻🇳 Việt:
+{vi}
+
+🇨🇳 中文:
+{zh}
+"""
+
+    await update.message.reply_text(reply)
 
 
 def main():
-
     app = ApplicationBuilder().token(TOKEN).build()
 
-    app.add_handler(
-        MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message)
-    )
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
     print("Bot đang chạy...")
-
     app.run_polling()
 
 
