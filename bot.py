@@ -1,54 +1,24 @@
 from telegram import Update
 from telegram.ext import ApplicationBuilder, MessageHandler, ContextTypes, filters
-from translator import translate_to_vi, translate_to_zh
+from translator import translate
+import os
 
-TOKEN = "YOUR_BOT_TOKEN"
+TOKEN = os.getenv("BOT_TOKEN")
 
-
-def is_chinese(text):
-    for char in text:
-        if '\u4e00' <= char <= '\u9fff':
-            return True
-    return False
-
-
-async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
-
+async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text
 
-    try:
+    translated = translate(text)
 
-        # Nếu là tiếng Trung → dịch sang Việt
-        if is_chinese(text):
-
-            translated = translate_to_vi(text)
-
-            if translated != text:
-                await update.message.reply_text(f"🇻🇳 {translated}")
-
-        # Nếu là tiếng Việt → dịch sang Trung
-        else:
-
-            translated = translate_to_zh(text)
-
-            if translated != text:
-                await update.message.reply_text(f"🇨🇳 {translated}")
-
-    except Exception as e:
-        print("Translation error:", e)
+    await update.message.reply_text(translated)
 
 
 def main():
-
     app = ApplicationBuilder().token(TOKEN).build()
 
-    app.add_handler(
-        MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message)
-    )
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle))
 
-    print("Bot Translator Running...")
-
-    app.run_polling(drop_pending_updates=True)
+    app.run_polling()
 
 
 if __name__ == "__main__":
