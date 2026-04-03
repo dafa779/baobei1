@@ -40,7 +40,7 @@ async def translate(update: Update, context: ContextTypes.DEFAULT_TYPE):
 def main():
 
     if not TOKEN:
-        print("❌ TOKEN chưa được thiết lập")
+        print("TOKEN")
         return
 
     app = ApplicationBuilder().token(TOKEN).build()
