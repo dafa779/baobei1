@@ -1,29 +1,3 @@
-Được. Dưới đây là **full code hoàn chỉnh** đã ghép theo đúng ý bạn:
-
-- **thông báo tiếng Trung**
-- **owner**: `8704348652`
-- **username admin/chủ bot**: `@ZZB339`
-- **private `/start`** hiện menu chào
-- **nút Help** chỉ hiện cho **chủ bot**
-- **Help** chỉ chủ bot dùng được
-- **trial 1 ngày**
-- **redeem system**:
-  - mã tạo riêng theo user
-  - mã chỉ dùng 1 lần
-  - người khác không dùng được
-- **/createcode** chỉ owner dùng
-- **2 bước chọn ngôn ngữ**
-- **dịch 2 chiều**
-- **AI chỉ gọi 1 lần**
-- **thông báo tạm tự xoá sau 10 giây**
-- **bỏ Help khỏi người thường**
-- **menu admin / share / settings** đầy đủ
-
-> Bạn hãy **xóa toàn bộ bot.py cũ** và dán nguyên file này vào.
-
----
-
-```python
 import os
 import json
 import time
